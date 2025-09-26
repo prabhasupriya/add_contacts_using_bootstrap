@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <title>Contact Management</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Sticky header */
+    .header {
+      position: sticky;
+      top: 0;
+      background-color: #e0e9f7ff;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 70px;
+      z-index: 1000;
+    }
+
+    .header h1 {
+	    color: #f6079e;
+      margin: 0;
+      font-size: 24px;
+      font-weight: bolder;
+      flex: 1;
+      text-align: center;
+
+    }
+
+    .header img {
+      height: 60px;
+      margin-left: 20px;
+    }
+
+    /* Layout container for sidebar + content */
+    .container-flex {
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      min-height: 100vh;
+      background-color: #cdf3f9;
+      padding: 10px;
+      border-right: 1px solid #ddd;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: rgb(246, 247, 255);
+    }
+
+    .nav-link {
+      cursor: pointer;
+    }
+
+    .nav-btn {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 16px;
+    border: 1px solid #007bff;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #007bff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .nav-btn:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .nav-btn:active {
+    transform: scale(0.97);
+  }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    .form-group input {
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="https://codingmaxima.com/assets/img/logo.png" alt="Logo">
+    <h1>Contact-Application</h1>
+    
+  </div>
+
+  <!-- Sidebar + Content -->
+  <div class="container-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="nav flex-column">
+        <button class="nav-btn" onclick="showSection('getContacts')">Get Contacts</button>
+        <button class="nav-btn" onclick="showSection('addContact')">Add Contact</button>
+        <button class="nav-btn" onclick="showSection('searchContact')">Search Contact</button>
+        <button class="nav-btn" onclick="showSection('updateContact')">Update Contact</button>
+        <button class="nav-btn" onclick="showSection('deleteContact')">Delete Contact</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div id="getContacts" class="content-section active">
+        <h2>All Contacts</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Mobile Number</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Type</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+          <tbody id="contactsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div id="addContact" class="content-section">
+        <h2>Add Contact</h2>
+        <form id="addContactForm">
+          <div class="form-group">
+            <label for="addMobileNumber">Mobile Number</label>
+            <input type="number" class="form-control" id="addMobileNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="addName">Name</label>
+            <input type="text" class="form-control" id="addName" required>
+          </div>
+          <div class="form-group">
+            <label for="addEmail">Email</label>
+            <input type="email" class="form-control" id="addEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="addType">Type</label>
+            <select class="form-control" id="addType" style="width: 30%;" required>
+              <option>PERSONAL</option>
+              <option>BUSINESS</option>
+              <option>OTHER</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="addURL">URL</label>
+            <input type="text" class="form-control" id="addURL">
+          </div>
+          <button type="submit" class="btn btn-primary">Add Contact</button>
+        </form>
+      </div>
+
+      <div id="searchContact" class="content-section">
+        <h2>Search Contact</h2>
+        <div class="form-group">
+          <label for="searchInput">Search by Mobile Number or Name</label>
+          <input type="text" class="form-control" id="searchInput">
+          <br>
+          <button class="btn btn-secondary" onclick="searchContact()">Search</button>
+        </div>
+        <table class="table" id="searchResults" style="display:none;">
+          <thead>
+            <tr>
+              <th>Mobile Number</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Type</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+          <tbody id="searchResultsBody"></tbody>
+        </table>
+      </div>
+
+      <div id="updateContact" class="content-section">
+        <h2>Update Contact</h2>
+        <div class="form-group">
+          <label for="updateMobileNumber">Mobile Number</label>
+          <input type="number" class="form-control" id="updateMobileNumber">
+          <br>
+          <button class="btn btn-secondary" onclick="getContactByMobile()">Get Contact</button>
+        </div>
+        <form id="updateContactForm" style="display:none;">
+          <div class="form-group">
+            <label for="updateName">Name</label>
+            <input type="text" class="form-control" id="updateName">
+          </div>
+          <div class="form-group">
+            <label for="updateEmail">Email</label>
+            <input type="email" class="form-control" id="updateEmail">
+          </div>
+          <div class="form-group">
+            <label for="updateType">Type</label>
+            <select class="form-control" id="updateType">
+              <option>PERSONAL</option>
+              <option>BUSINESS</option>
+              <option>OTHER</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="updateURL">URL</label>
+            <input type="text" class="form-control" id="updateURL">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="updateContact()">Update Contact</button>
+        </form>
+      </div>
+
+      <div id="deleteContact" class="content-section">
+        <h2>Delete Contact</h2>
+        <div class="form-group">
+          <label for="deleteMobileNumber">Mobile Number</label>
+          <input type="number" class="form-control" id="deleteMobileNumber">
+          <br>
+          <button class="btn btn-danger" onclick="deleteContact()">Delete Contact</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    const apiUrl = 'http://localhost:8081'; // Update with your API URL
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+        if (sectionId === 'getContacts') {
+            getAllContacts();
+        }
+    }
+
+    async function getAllContacts() {
+        const response = await fetch('http://localhost:8081/get/all/contacts');
+        const contacts = await response.json();
+        const tableBody = document.getElementById('contactsTableBody');
+        tableBody.innerHTML = ''; // Clear the table
+        contacts.forEach(contact => {
+            const row = `<tr>
+                <td>${contact.mobileNumber}</td>
+                <td>${contact.name}</td>
+                <td>${contact.email}</td>
+                <td>${contact.type}</td>
+                <td>${contact.URL}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    document.getElementById('addContactForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const contact = {
+            mobileNumber: document.getElementById('addMobileNumber').value,
+            name: document.getElementById('addName').value,
+            email: document.getElementById('addEmail').value,
+            type: document.getElementById('addType').value,
+            URL: document.getElementById('addURL').value,
+        };
+        await fetch('${apiUrl}/add/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(contact),
+        });
+        alert('Contact added successfully!');
+        getAllContacts(); // Refresh the contacts list
+        showSection('getContacts'); // Show the contacts list
+    });
+
+    async function searchContact() {
+        const searchInput = document.getElementById('searchInput').value;
+        const response = await fetch(`${apiUrl}/searchByName/${searchInput}`); // Update with your search API endpoint
+        const contacts = await response.json();
+        const searchResultsBody = document.getElementById('searchResultsBody');
+        searchResultsBody.innerHTML = ''; // Clear previous results
+        if (contacts.length > 0) {
+            contacts.forEach(contact => {
+                const row = `<tr>
+                    <td>${contact.mobileNumber}</td>
+                    <td>${contact.name}</td>
+                    <td>${contact.email}</td>
+                    <td>${contact.type}</td>
+                    <td>${contact.URL}</td>
+                </tr>`;
+                searchResultsBody.innerHTML += row;
+            });
+            document.getElementById('searchResults').style.display = 'table';
+        } else {
+            alert('No contacts found!');
+            document.getElementById('searchResults').style.display = 'none';
+        }
+    }
+
+    async function getContactByMobile() {
+        const mobileNumber = document.getElementById('updateMobileNumber').value;
+        const response = await fetch(`${apiUrl}/get/contact/${mobileNumber}`);
+        const contact = await response.json();
+        if (contact) {
+            
+            document.getElementById('updateName').value = contact.name;
+            document.getElementById('updateEmail').value = contact.email;
+            document.getElementById('updateType').value = contact.type;
+            document.getElementById('updateURL').value = contact.URL;
+            document.getElementById('updateContactForm').style.display = 'block';
+        } else {
+            alert('Contact not found!');
+        }
+    }
+
+    async function updateContact() {
+        const mobileNumber = document.getElementById('updateMobileNumber').value;
+        const updatedContact = {
+            mobileNumber: mobileNumber,
+            name: document.getElementById('updateName').value,
+            email: document.getElementById('updateEmail').value,
+            type: document.getElementById('updateType').value,
+            URL: document.getElementById('updateURL').value,
+        };
+        await fetch(`${apiUrl}/get/contact/${mobileNumber}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedContact),
+        });
+        alert('Contact updated successfully!');
+        getAllContacts();
+        showSection('getContacts');
+    }
+
+    async function deleteContact() {
+        const mobileNumber = document.getElementById('deleteMobileNumber').value;
+        await fetch(`${apiUrl}/delete/${mobileNumber}`, {
+            method: 'DELETE',
+        });
+        alert('Contact deleted successfully!');
+        getAllContacts();
+        showSection('getContacts');
+    }
+
+    // Initialize with the Get Contacts section
+    showSection('getContacts');
+</script>
+
+</body>
+</html>
